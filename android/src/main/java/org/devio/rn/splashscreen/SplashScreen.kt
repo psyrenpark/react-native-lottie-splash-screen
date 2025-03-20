@@ -3,7 +3,14 @@ package org.devio.rn.splashscreen
 import android.animation.Animator
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
+import android.graphics.Rect
 import android.os.Build
+import android.util.DisplayMetrics
+import android.view.ViewGroup
+import android.view.WindowInsets
+import android.view.WindowManager
+import androidx.core.view.updateLayoutParams
 import com.airbnb.lottie.LottieAnimationView
 import java.lang.ref.WeakReference
 
@@ -21,6 +28,29 @@ object SplashScreen {
     private var isAnimationFinished = false
     private var waiting = false
 
+
+    fun getUsableScreenHeight(context: Activity): Int {
+        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11 (API 30) 이상
+            val windowMetrics = windowManager.currentWindowMetrics
+            val insets = windowMetrics.windowInsets
+                .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+            val displayHeight = windowMetrics.bounds.height()
+            displayHeight - insets.top - insets.bottom
+        } else {
+            // Android 10 (API 29) 이하
+            val metrics = DisplayMetrics()
+            @Suppress("DEPRECATION")
+            windowManager.defaultDisplay.getMetrics(metrics)
+            val rect = Rect()
+            @Suppress("DEPRECATION")
+            windowManager.defaultDisplay.getRectSize(rect)
+            rect.height()
+        }
+    }
+
+
     /**
      * 打开启动屏
      */
@@ -34,6 +64,15 @@ object SplashScreen {
                 mSplashDialog?.setContentView(R.layout.launch_screen)
                 mSplashDialog?.setCancelable(false)
                 val lottie = mSplashDialog?.findViewById<LottieAnimationView>(lottieId)
+
+                val usableHeight = getUsableScreenHeight(activity)
+                val height = usableHeight /2
+
+                lottie?.updateLayoutParams {
+                    this.width = (height * 2 * 0.8).toInt()
+                    this.height = (height * 2 * 0.8).toInt()
+                    (this as ViewGroup.MarginLayoutParams).topMargin = -(height /2).toInt()
+                }
 
                 lottie?.addAnimatorListener(object : Animator.AnimatorListener {
                     override fun onAnimationStart(animation: Animator) {
@@ -106,3 +145,4 @@ object SplashScreen {
         }
     }
 }
+
