@@ -69,9 +69,9 @@ object SplashScreen {
                 val height = usableHeight /2
 
                 lottie?.updateLayoutParams {
-                    this.width = (height * 2 * 0.8).toInt()
-                    this.height = (height * 2 * 0.8).toInt()
-                    (this as ViewGroup.MarginLayoutParams).topMargin = -(height /2).toInt()
+                    this.width = (height * 2 * 0.5).toInt()
+                    this.height = (height * 2 * 0.5).toInt()
+                    (this as ViewGroup.MarginLayoutParams).topMargin = -(height * 0.5 - height * 0.15  ).toInt()
                 }
 
                 lottie?.addAnimatorListener(object : Animator.AnimatorListener {
