@@ -58,7 +58,7 @@ object SplashScreen {
      * 打开启动屏
      */
     @JvmStatic
-    fun show(activity: Activity?, themeResId: Int = R.style.SplashScreen_SplashTheme, lottieId: Int , progressBarId : Int) {
+    fun show(activity: Activity?, themeResId: Int = R.style.SplashScreen_SplashTheme, lottieId: Int , progressBarId : Int?) {
         if (activity == null) return
         mActivity = WeakReference(activity)
         activity.runOnUiThread {
@@ -67,7 +67,7 @@ object SplashScreen {
                 mSplashDialog?.setContentView(R.layout.launch_screen)
                 mSplashDialog?.setCancelable(false)
                 val lottie = mSplashDialog?.findViewById<LottieAnimationView>(lottieId)
-                val progressBar = mSplashDialog?.findViewById<ProgressBar>(progressBarId)
+
 
                 val usableHeight = getUsableScreenHeight(activity)
                 val height = usableHeight /2
@@ -96,10 +96,12 @@ object SplashScreen {
                 if (mSplashDialog?.isShowing == false) {
                     mSplashDialog?.show()
 
-                    Handler().postDelayed({
-                        progressBar?.visibility = View.VISIBLE
-                    }, 2000)
-
+                    if (progressBarId != null) {
+                        val progressBar = mSplashDialog?.findViewById<ProgressBar>(progressBarId)
+                        Handler().postDelayed({
+                            progressBar?.visibility = View.VISIBLE
+                        }, 2000)
+                    }
                 }
 
             }
