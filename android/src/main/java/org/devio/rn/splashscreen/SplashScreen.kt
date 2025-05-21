@@ -6,10 +6,13 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Rect
 import android.os.Build
+import android.os.Handler
 import android.util.DisplayMetrics
+import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
+import android.widget.ProgressBar
 import androidx.core.view.updateLayoutParams
 import com.airbnb.lottie.LottieAnimationView
 import java.lang.ref.WeakReference
@@ -55,7 +58,7 @@ object SplashScreen {
      * 打开启动屏
      */
     @JvmStatic
-    fun show(activity: Activity?, themeResId: Int = R.style.SplashScreen_SplashTheme, lottieId: Int) {
+    fun show(activity: Activity?, themeResId: Int = R.style.SplashScreen_SplashTheme, lottieId: Int , progressBarId : Int) {
         if (activity == null) return
         mActivity = WeakReference(activity)
         activity.runOnUiThread {
@@ -64,13 +67,15 @@ object SplashScreen {
                 mSplashDialog?.setContentView(R.layout.launch_screen)
                 mSplashDialog?.setCancelable(false)
                 val lottie = mSplashDialog?.findViewById<LottieAnimationView>(lottieId)
+                val progressBar = mSplashDialog?.findViewById<ProgressBar>(progressBarId)
 
                 val usableHeight = getUsableScreenHeight(activity)
                 val height = usableHeight /2
 
                 lottie?.updateLayoutParams {
-                    this.width = (height * 2 * 0.5).toInt()
-                    this.height = (height * 2 * 0.5).toInt()
+                    this.width = (height).toInt()
+                    this.height = (height).toInt()
+
                     (this as ViewGroup.MarginLayoutParams).topMargin = -(height * 0.5 - height * 0.15  ).toInt()
                 }
 
@@ -90,7 +95,13 @@ object SplashScreen {
 
                 if (mSplashDialog?.isShowing == false) {
                     mSplashDialog?.show()
+
+                    Handler().postDelayed({
+                        progressBar?.visibility = View.VISIBLE
+                    }, 2000)
+
                 }
+
             }
         }
     }
